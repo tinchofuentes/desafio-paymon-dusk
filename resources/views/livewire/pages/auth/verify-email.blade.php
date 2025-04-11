@@ -10,7 +10,7 @@ layout('components.layouts.guest');
 
 $sendVerification = function () {
     if (Auth::user()->hasVerifiedEmail()) {
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        $this->redirectIntended(default: route('admin.communications', absolute: false), navigate: true);
 
         return;
     }

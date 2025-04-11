@@ -24,11 +24,43 @@ $logout = function (Logout $logout) {
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <a href="{{ url('/') }}" class="inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 dark:border-indigo-600 text-sm font-medium leading-5 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out">
+                    <a 
+                        href="{{ url('/') }}"
+                        wire:navigate
+                        class="inline-flex items-center px-1 pt-1 
+                        {{ request()->is('/') ? 'border-b-2 border-indigo-400 dark:border-indigo-600' : 'border-b-2 border-transparent' }} 
+                         text-sm font-medium leading-5 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out"
+                    >
                         Inicio
                     </a>
+
+                    @auth
+                        <a 
+                            href="{{ url('/admin/communications') }}"
+                            wire:navigate
+                            class="inline-flex items-center px-1 pt-1 {{ request()->is('admin/communications') ? 'border-b-2 border-indigo-400 dark:border-indigo-600' : 'border-b-2 border-transparent' }} text-sm font-medium leading-5 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out">
+                            Comunicados
+                        </a>
+                    @endauth
                 </div>
             </div>
+
+            @auth
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-700 dark:text-gray-300">
+                        {{ Auth::user()->name }}
+                    </span>
+
+                    <!-- Authentication -->
+                    <flux:button
+                        wire:click="logout"
+                        icon:trailing="x-mark"
+                        variant="ghost"
+                    >
+                        Cerrar sesión
+                    </flux:button>
+                </div>
+            @endauth
 
             <!-- Mobile menu button -->
             <div class="-mr-2 flex items-center sm:hidden">
