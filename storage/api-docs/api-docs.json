@@ -3,10 +3,6 @@
     "info": {
         "title": "School Management System API",
         "description": "API para la gestión de academias, cursos, matrículas y comunicados",
-        "contact": {
-            "name": "School Management",
-            "email": "info@escuela.com"
-        },
         "version": "1.0.0"
     },
     "servers": [
@@ -464,8 +460,179 @@
                     "404": {
                         "description": "Academia no encontrada"
                     },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Iniciar sesión y obtener token",
+                "description": "Autentica un usuario y retorna un token de acceso",
+                "operationId": "login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "usuario@ejemplo.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Autenticación exitosa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|laravel_sanctum_tokendK6mVqwSd23hf8eFuXPQ5XUFcUAsXM8a5XTl49Ld"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Juan Pérez"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "usuario@ejemplo.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "422": {
-                        "description": "No se puede eliminar la academia porque tiene cursos asociados"
+                        "description": "Datos no válidos o credenciales incorrectas"
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Cerrar sesión",
+                "description": "Revoca el token de acceso del usuario autenticado",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Sesión cerrada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sesión cerrada correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/user": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Obtener datos del usuario autenticado",
+                "description": "Retorna la información del usuario autenticado",
+                "operationId": "getUser",
+                "responses": {
+                    "200": {
+                        "description": "Operación exitosa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Juan Pérez"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "usuario@ejemplo.com"
+                                                },
+                                                "email_verified_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "No autorizado"
@@ -602,7 +769,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -754,7 +926,12 @@
                     "404": {
                         "description": "Comunicado no encontrado"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -1035,7 +1212,7 @@
                     "Courses"
                 ],
                 "summary": "Crear un nuevo curso",
-                "description": "Crea un nuevo curso en la base de datos",
+                "description": "Crea un nuevo curso en la base de datos. Para matricular estudiantes en este curso, utilice el endpoint de Enrollments (/enrollments).",
                 "operationId": "storeCourse",
                 "requestBody": {
                     "required": true,
@@ -1043,8 +1220,9 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "name",
                                     "academy_id",
+                                    "name",
+                                    "description",
                                     "cost",
                                     "duration",
                                     "modality"
@@ -1197,7 +1375,7 @@
                     "Courses"
                 ],
                 "summary": "Actualizar un curso existente",
-                "description": "Actualiza los datos de un curso específico",
+                "description": "Actualiza un curso existente en la base de datos",
                 "operationId": "updateCourse",
                 "parameters": [
                     {
@@ -1215,23 +1393,31 @@
                     "content": {
                         "application/json": {
                             "schema": {
+                                "required": [
+                                    "academy_id",
+                                    "name",
+                                    "description",
+                                    "cost",
+                                    "duration",
+                                    "modality"
+                                ],
                                 "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Piano para intermedios"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "example": "Curso intermedio de piano"
-                                    },
                                     "academy_id": {
                                         "type": "integer",
                                         "example": 1
                                     },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Piano nivel avanzado"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Curso avanzado de piano"
+                                    },
                                     "cost": {
                                         "type": "number",
                                         "format": "float",
-                                        "example": 180
+                                        "example": 200
                                     },
                                     "duration": {
                                         "type": "integer",
@@ -1244,7 +1430,7 @@
                                             "online",
                                             "hybrid"
                                         ],
-                                        "example": "hybrid"
+                                        "example": "in-person"
                                     },
                                     "active": {
                                         "type": "boolean",
@@ -1252,7 +1438,7 @@
                                     },
                                     "capacity": {
                                         "type": "integer",
-                                        "example": 12
+                                        "example": 10
                                     },
                                     "start_date": {
                                         "type": "string",
@@ -1307,7 +1493,7 @@
                     "Courses"
                 ],
                 "summary": "Eliminar un curso",
-                "description": "Elimina un curso específico",
+                "description": "Elimina un curso existente",
                 "operationId": "deleteCourse",
                 "parameters": [
                     {
@@ -1365,8 +1551,7 @@
                             "type": "string",
                             "enum": [
                                 "pending",
-                                "active",
-                                "completed",
+                                "confirmed",
                                 "cancelled"
                             ]
                         }
@@ -1454,7 +1639,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -1469,16 +1659,52 @@
                         "application/json": {
                             "schema": {
                                 "required": [
+                                    "guardian_name",
+                                    "guardian_email",
+                                    "guardian_phone",
+                                    "student_first_name",
+                                    "student_last_name",
+                                    "student_birth_date",
                                     "course_id",
-                                    "student_id",
-                                    "enrollment_date"
+                                    "payment_method"
                                 ],
                                 "properties": {
-                                    "course_id": {
-                                        "type": "integer",
-                                        "example": 1
+                                    "guardian_name": {
+                                        "type": "string",
+                                        "example": "Juan Pérez"
                                     },
-                                    "student_id": {
+                                    "guardian_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan.perez@example.com"
+                                    },
+                                    "guardian_phone": {
+                                        "type": "string",
+                                        "example": "+56 9 1234 5678"
+                                    },
+                                    "student_first_name": {
+                                        "type": "string",
+                                        "example": "María"
+                                    },
+                                    "student_last_name": {
+                                        "type": "string",
+                                        "example": "Pérez"
+                                    },
+                                    "student_birth_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-01-15"
+                                    },
+                                    "student_gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female",
+                                            "other"
+                                        ],
+                                        "example": "female"
+                                    },
+                                    "course_id": {
                                         "type": "integer",
                                         "example": 1
                                     },
@@ -1489,16 +1715,16 @@
                                     },
                                     "notes": {
                                         "type": "string",
-                                        "example": "El estudiante requiere atención especial"
+                                        "example": "La estudiante tiene experiencia previa en piano."
                                     },
-                                    "guardian_id": {
-                                        "type": "integer",
-                                        "example": 1
-                                    },
-                                    "initial_payment": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "example": 50
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "confirmed",
+                                            "cancelled"
+                                        ],
+                                        "example": "pending"
                                     },
                                     "payment_method": {
                                         "type": "string",
@@ -1507,6 +1733,25 @@
                                             "bank_transfer"
                                         ],
                                         "example": "cash"
+                                    },
+                                    "payment_amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 150
+                                    },
+                                    "payment_status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "completed",
+                                            "failed",
+                                            "refunded"
+                                        ],
+                                        "example": "pending"
+                                    },
+                                    "reference_number": {
+                                        "type": "string",
+                                        "example": "TRX-12345"
                                     }
                                 },
                                 "type": "object"
@@ -1536,25 +1781,20 @@
                     "401": {
                         "description": "No autorizado"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
-        "/enrollments/{id}": {
+        "/enrollments/{enrollment}": {
             "get": {
                 "tags": [
                     "Enrollments"
                 ],
-                "summary": "Obtener detalle de una matrícula",
-                "description": "Retorna los datos de una matrícula específica",
+                "summary": "Obtener detalles de una matrícula",
+                "description": "Retorna los detalles de una matrícula específica",
                 "operationId": "getEnrollment",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "enrollment",
                         "in": "path",
                         "description": "ID de la matrícula",
                         "required": true,
@@ -1596,12 +1836,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/components/schemas/Enrollment"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/Enrollment"
                                 }
                             }
                         }
@@ -1609,18 +1844,23 @@
                     "404": {
                         "description": "Matrícula no encontrada"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
                     "Enrollments"
                 ],
                 "summary": "Actualizar una matrícula existente",
-                "description": "Actualiza los datos de una matrícula específica",
+                "description": "Actualiza una matrícula existente en la base de datos",
                 "operationId": "updateEnrollment",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "enrollment",
                         "in": "path",
                         "description": "ID de la matrícula",
                         "required": true,
@@ -1635,24 +1875,89 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "guardian_name": {
+                                        "type": "string",
+                                        "example": "Juan Pérez Actualizado"
+                                    },
+                                    "guardian_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "juan.perez.nuevo@example.com"
+                                    },
+                                    "guardian_phone": {
+                                        "type": "string",
+                                        "example": "+56 9 8765 4321"
+                                    },
+                                    "student_first_name": {
+                                        "type": "string",
+                                        "example": "María Actualizada"
+                                    },
+                                    "student_last_name": {
+                                        "type": "string",
+                                        "example": "Pérez Actualizada"
+                                    },
+                                    "student_birth_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-02-20"
+                                    },
+                                    "student_gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female",
+                                            "other"
+                                        ],
+                                        "example": "female"
+                                    },
+                                    "course_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
                                     "enrollment_date": {
                                         "type": "string",
                                         "format": "date",
-                                        "example": "2023-05-15"
+                                        "example": "2023-06-01"
                                     },
                                     "notes": {
                                         "type": "string",
-                                        "example": "El estudiante ha mejorado significativamente"
+                                        "example": "La estudiante ha progresado muy bien."
                                     },
                                     "status": {
                                         "type": "string",
                                         "enum": [
                                             "pending",
-                                            "active",
-                                            "completed",
+                                            "confirmed",
                                             "cancelled"
                                         ],
-                                        "example": "active"
+                                        "example": "confirmed"
+                                    },
+                                    "payment_method": {
+                                        "type": "string",
+                                        "enum": [
+                                            "cash",
+                                            "bank_transfer"
+                                        ],
+                                        "example": "bank_transfer"
+                                    },
+                                    "payment_amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 200
+                                    },
+                                    "payment_status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "completed",
+                                            "failed",
+                                            "refunded"
+                                        ],
+                                        "example": "completed"
+                                    },
+                                    "reference_number": {
+                                        "type": "string",
+                                        "example": "TRX-67890"
                                     }
                                 },
                                 "type": "object"
@@ -1666,12 +1971,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/components/schemas/Enrollment"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/Enrollment"
                                 }
                             }
                         }
@@ -1697,11 +1997,11 @@
                     "Enrollments"
                 ],
                 "summary": "Eliminar una matrícula",
-                "description": "Elimina una matrícula específica",
+                "description": "Elimina una matrícula existente",
                 "operationId": "deleteEnrollment",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "enrollment",
                         "in": "path",
                         "description": "ID de la matrícula",
                         "required": true,
@@ -1728,40 +2028,79 @@
                 ]
             }
         },
-        "/payments/{payment}/process": {
+        "/payments": {
             "post": {
                 "tags": [
                     "Payments"
                 ],
-                "summary": "Procesar un pago existente",
-                "description": "Procesa un pago según su método (efectivo o transferencia bancaria)",
-                "operationId": "processPayment",
-                "parameters": [
-                    {
-                        "name": "payment",
-                        "in": "path",
-                        "description": "ID del pago a procesar",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
+                "summary": "Registrar un nuevo pago",
+                "description": "Crea un nuevo registro de pago en el sistema",
+                "operationId": "storePayment",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "enrollment_id",
+                                    "amount",
+                                    "method",
+                                    "payment_date"
+                                ],
+                                "properties": {
+                                    "enrollment_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 150
+                                    },
+                                    "method": {
+                                        "type": "string",
+                                        "enum": [
+                                            "cash",
+                                            "bank_transfer"
+                                        ],
+                                        "example": "cash"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "completed",
+                                            "failed",
+                                            "refunded"
+                                        ],
+                                        "example": "pending"
+                                    },
+                                    "payment_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2023-07-15"
+                                    },
+                                    "reference_number": {
+                                        "type": "string",
+                                        "example": "TRX-123456"
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "Pago inicial de matrícula"
+                                    }
+                                },
+                                "type": "object"
+                            }
                         }
                     }
-                ],
+                },
                 "responses": {
-                    "200": {
-                        "description": "Pago procesado exitosamente",
+                    "201": {
+                        "description": "Pago registrado exitosamente",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Pago en efectivo procesado correctamente"
-                                        },
-                                        "transaction_id": {
-                                            "type": "string",
-                                            "example": "CASH-1625145600-123"
-                                        },
                                         "data": {
                                             "$ref": "#/components/schemas/Payment"
                                         }
@@ -1772,23 +2111,46 @@
                         }
                     },
                     "422": {
-                        "description": "Error en el procesamiento del pago",
+                        "description": "Error de validación",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Número de referencia inválido"
+                                            "example": "Los datos proporcionados no son válidos"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "enrollment_id": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "La matrícula es obligatoria"
+                                                    }
+                                                },
+                                                "amount": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "El monto del pago es obligatorio"
+                                                    }
+                                                },
+                                                "method": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "El método de pago es obligatorio"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "description": "Pago no encontrado"
                     },
                     "500": {
                         "description": "Error del servidor",
@@ -1798,7 +2160,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Error al procesar el pago: Mensaje de error"
+                                            "example": "Error al registrar el pago: Mensaje de error"
                                         }
                                     },
                                     "type": "object"
@@ -2080,15 +2442,14 @@
                                 "type": "string",
                                 "enum": [
                                     "pending",
-                                    "active",
-                                    "completed",
+                                    "confirmed",
                                     "cancelled"
                                 ],
-                                "example": "active"
+                                "example": "confirmed"
                             },
                             "label": {
                                 "type": "string",
-                                "example": "Activa"
+                                "example": "Confirmado"
                             }
                         },
                         "type": "object"
@@ -2333,6 +2694,485 @@
                     }
                 },
                 "type": "object"
+            },
+            "User": {
+                "title": "User",
+                "description": "Modelo de usuario del sistema",
+                "properties": {
+                    "id": {
+                        "description": "ID único del usuario",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Nombre completo del usuario",
+                        "type": "string",
+                        "example": "Juan Pérez"
+                    },
+                    "email": {
+                        "description": "Correo electrónico del usuario",
+                        "type": "string",
+                        "format": "email",
+                        "example": "juan.perez@ejemplo.com"
+                    },
+                    "email_verified_at": {
+                        "description": "Fecha y hora de verificación del correo electrónico",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "description": "Fecha de creación",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Fecha de última actualización",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "UserWithToken": {
+                "title": "User with Token",
+                "description": "Usuario con token de autenticación",
+                "properties": {
+                    "token": {
+                        "description": "Token de autenticación",
+                        "type": "string",
+                        "example": "1|laravel_sanctum_YNdSgA8rCzjbLavVeWOsD1IjGWEeaBZbUbIpPLlx"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    }
+                },
+                "type": "object"
+            },
+            "LoginRequest": {
+                "title": "Login Request",
+                "description": "Datos para inicio de sesión",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "Correo electrónico del usuario",
+                        "type": "string",
+                        "format": "email",
+                        "example": "juan.perez@ejemplo.com"
+                    },
+                    "password": {
+                        "description": "Contraseña del usuario",
+                        "type": "string",
+                        "format": "password",
+                        "example": "contraseña123"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "responses": {
+            "404": {
+                "description": "Recurso no encontrado"
+            },
+            "401": {
+                "description": "No autorizado"
+            },
+            "403": {
+                "description": "Prohibido - No tiene permisos"
+            },
+            "422": {
+                "description": "Error de validación",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "Los datos proporcionados no son válidos"
+                                },
+                                "errors": {
+                                    "type": "object",
+                                    "example": {
+                                        "campo1": [
+                                            "El campo es requerido"
+                                        ],
+                                        "campo2": [
+                                            "El formato es inválido"
+                                        ]
+                                    }
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "500": {
+                "description": "Error del servidor",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "Error interno del servidor"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "204": {
+                "description": "Sin contenido - Operación exitosa"
+            },
+            "PaginatedResponse": {
+                "description": "Respuesta paginada exitosa",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                },
+                                "links": {
+                                    "properties": {
+                                        "first": {
+                                            "type": "string",
+                                            "example": "http://example.com/api/resource?page=1"
+                                        },
+                                        "last": {
+                                            "type": "string",
+                                            "example": "http://example.com/api/resource?page=5"
+                                        },
+                                        "prev": {
+                                            "type": "string",
+                                            "example": "http://example.com/api/resource?page=1"
+                                        },
+                                        "next": {
+                                            "type": "string",
+                                            "example": "http://example.com/api/resource?page=3"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "meta": {
+                                    "properties": {
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "from": {
+                                            "type": "integer",
+                                            "example": 16
+                                        },
+                                        "last_page": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "path": {
+                                            "type": "string",
+                                            "example": "http://example.com/api/resource"
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 15
+                                        },
+                                        "to": {
+                                            "type": "integer",
+                                            "example": 30
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 75
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "parameters": {
+            "id_in_path": {
+                "name": "id",
+                "in": "path",
+                "description": "ID del recurso",
+                "required": true,
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "course_id_query": {
+                "name": "course_id",
+                "in": "query",
+                "description": "Filtrar por curso",
+                "required": false,
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "with_course_query": {
+                "name": "with_course",
+                "in": "query",
+                "description": "Incluir curso relacionado",
+                "required": false,
+                "schema": {
+                    "type": "boolean"
+                }
+            },
+            "with_counts_query": {
+                "name": "with_counts",
+                "in": "query",
+                "description": "Incluir conteos de relaciones",
+                "required": false,
+                "schema": {
+                    "type": "boolean"
+                }
+            },
+            "active_query": {
+                "name": "active",
+                "in": "query",
+                "description": "Filtrar por estado activo/inactivo",
+                "required": false,
+                "schema": {
+                    "type": "boolean"
+                }
+            },
+            "per_page_query": {
+                "name": "per_page",
+                "in": "query",
+                "description": "Número de resultados por página",
+                "required": false,
+                "schema": {
+                    "type": "integer",
+                    "default": 15
+                }
+            },
+            "from_date_query": {
+                "name": "from_date",
+                "in": "query",
+                "description": "Filtrar desde fecha (formato Y-m-d)",
+                "required": false,
+                "schema": {
+                    "type": "string",
+                    "format": "date"
+                }
+            },
+            "to_date_query": {
+                "name": "to_date",
+                "in": "query",
+                "description": "Filtrar hasta fecha (formato Y-m-d)",
+                "required": false,
+                "schema": {
+                    "type": "string",
+                    "format": "date"
+                }
+            }
+        },
+        "requestBodies": {
+            "EnrollmentRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "course_id",
+                                "student_id",
+                                "enrollment_date"
+                            ],
+                            "properties": {
+                                "course_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "student_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "enrollment_date": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "example": "2023-05-01"
+                                },
+                                "notes": {
+                                    "type": "string",
+                                    "example": "El estudiante requiere atención especial"
+                                },
+                                "guardian_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "initial_payment": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 50
+                                },
+                                "payment_method": {
+                                    "type": "string",
+                                    "enum": [
+                                        "cash",
+                                        "bank_transfer"
+                                    ],
+                                    "example": "cash"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "CourseRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "name",
+                                "academy_id",
+                                "cost",
+                                "duration",
+                                "modality"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example": "Piano para principiantes"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "example": "Curso básico de piano"
+                                },
+                                "academy_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "cost": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 150
+                                },
+                                "duration": {
+                                    "type": "integer",
+                                    "example": 20
+                                },
+                                "modality": {
+                                    "type": "string",
+                                    "enum": [
+                                        "in-person",
+                                        "online",
+                                        "hybrid"
+                                    ],
+                                    "example": "in-person"
+                                },
+                                "active": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "capacity": {
+                                    "type": "integer",
+                                    "example": 15
+                                },
+                                "start_date": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "example": "2023-05-01"
+                                },
+                                "end_date": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "example": "2023-06-15"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "CommunicationRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "course_id",
+                                "title",
+                                "message",
+                                "send_date"
+                            ],
+                            "properties": {
+                                "course_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "title": {
+                                    "type": "string",
+                                    "example": "Reunión de padres"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Se convoca a todos los padres a una reunión el próximo martes"
+                                },
+                                "send_date": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2023-05-15T18:00:00"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "enum": [
+                                        "draft",
+                                        "sent",
+                                        "scheduled"
+                                    ],
+                                    "example": "scheduled"
+                                },
+                                "send_now": {
+                                    "type": "boolean",
+                                    "example": false
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "AcademyRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "required": [
+                                "name"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example": "Academia de Música"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "example": "Aprende a tocar instrumentos musicales"
+                                },
+                                "active": {
+                                    "type": "boolean",
+                                    "example": true
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
             }
         },
         "securitySchemes": {
@@ -2344,6 +3184,14 @@
         }
     },
     "tags": [
+        {
+            "name": "Academies",
+            "description": "API Endpoints de gestión de academias"
+        },
+        {
+            "name": "Authentication",
+            "description": "API Endpoints de autenticación"
+        },
         {
             "name": "Communications",
             "description": "API Endpoints de gestión de comunicados a tutores"
@@ -2359,10 +3207,6 @@
         {
             "name": "Payments",
             "description": "API Endpoints de gestión de pagos"
-        },
-        {
-            "name": "Academies",
-            "description": "Academies"
         }
     ]
 }

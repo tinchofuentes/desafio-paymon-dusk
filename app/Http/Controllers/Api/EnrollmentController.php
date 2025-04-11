@@ -71,34 +71,42 @@ class EnrollmentController extends Controller
             DB::beginTransaction();
             
             $validated = $request->validated();
-            $enrollment = Enrollment::create([
-                'course_id' => $validated['course_id'],
-                'student_id' => $validated['student_id'],
-                'enrollment_date' => $validated['enrollment_date'],
-                'notes' => $validated['notes'] ?? null,
             
+            $guardian = Guardian::firstOrCreate(
+                ['email' => $validated['guardian_email']],
+                [
+                    'name' => $validated['guardian_name'],
+                    'phone' => $validated['guardian_phone'],
+                ]
+            );
+            
+            $student = Student::create([
+                'guardian_id' => $guardian->id,
+                'first_name' => $validated['student_first_name'],
+                'last_name' => $validated['student_last_name'],
+                'birth_date' => $validated['student_birth_date'],
+                'gender' => $validated['student_gender'] ?? null,
             ]);
             
-            if (isset($validated['initial_payment']) && $validated['initial_payment'] > 0) {
+            $enrollment = Enrollment::create([
+                'student_id' => $student->id,
+                'course_id' => $validated['course_id'],
+                'enrollment_date' => $validated['enrollment_date'] ?? now(),
+                'status' => $validated['status'] ?? EnrollmentStatus::PENDING,
+                'notes' => $validated['notes'] ?? null,
+            ]);
+            
+            if (isset($validated['payment_amount']) && $validated['payment_amount'] > 0) {
                 $payment = new Payment([
-                    'amount' => $validated['initial_payment'],
+                    'amount' => $validated['payment_amount'],
                     'method' => $validated['payment_method'],
-                    'status' => PaymentStatus::PENDING,
+                    'status' => $validated['payment_status'] ?? PaymentStatus::PENDING,
                     'payment_date' => now(),
+                    'reference_number' => $validated['reference_number'] ?? null,
                     'notes' => 'Pago inicial de matrícula',
                 ]);
                 
                 $enrollment->payments()->save($payment);
-            }
-            
-            if (isset($validated['guardian_id'])) {
-                $guardian = Guardian::findOrFail($validated['guardian_id']);
-                
-                $studentHasGuardian = $guardian->students()->where('id', $validated['student_id'])->exists();
-                
-                if (!$studentHasGuardian) {
-                    throw new \InvalidArgumentException('El tutor no está asociado con el estudiante');
-                }
             }
             
             DB::commit();
@@ -143,9 +151,114 @@ class EnrollmentController extends Controller
 
     public function update(EnrollmentRequest $request, Enrollment $enrollment): EnrollmentResource
     {
-        $enrollment->update($request->validated());
-        
-        return new EnrollmentResource($enrollment);
+        try {
+            DB::beginTransaction();
+            
+            $validated = $request->validated();
+            
+            if (isset($validated['student_first_name']) || isset($validated['student_last_name']) || 
+                isset($validated['student_birth_date']) || isset($validated['student_gender'])) {
+                
+                $student = $enrollment->student;
+                
+                if ($student) {
+                    $studentData = [];
+                    
+                    if (isset($validated['student_first_name'])) {
+                        $studentData['first_name'] = $validated['student_first_name'];
+                    }
+                    
+                    if (isset($validated['student_last_name'])) {
+                        $studentData['last_name'] = $validated['student_last_name'];
+                    }
+                    
+                    if (isset($validated['student_birth_date'])) {
+                        $studentData['birth_date'] = $validated['student_birth_date'];
+                    }
+                    
+                    if (isset($validated['student_gender'])) {
+                        $studentData['gender'] = $validated['student_gender'];
+                    }
+                    
+                    $student->update($studentData);
+                    
+    
+                    $guardian = $student->guardian;
+                    
+                    if ($guardian && (isset($validated['guardian_name']) || isset($validated['guardian_email']) || 
+                        isset($validated['guardian_phone']))) {
+                        
+                        $guardianData = [];
+                        
+                        if (isset($validated['guardian_name'])) {
+                            $guardianData['name'] = $validated['guardian_name'];
+                        }
+                        
+                        if (isset($validated['guardian_email'])) {
+                            $guardianData['email'] = $validated['guardian_email'];
+                        }
+                        
+                        if (isset($validated['guardian_phone'])) {
+                            $guardianData['phone'] = $validated['guardian_phone'];
+                        }
+                        
+                        $guardian->update($guardianData);
+                    }
+                }
+            }
+            
+            $enrollmentData = [];
+            
+            if (isset($validated['course_id'])) {
+                $enrollmentData['course_id'] = $validated['course_id'];
+            }
+            
+            if (isset($validated['enrollment_date'])) {
+                $enrollmentData['enrollment_date'] = $validated['enrollment_date'];
+            }
+            
+            if (isset($validated['status'])) {
+                $enrollmentData['status'] = $validated['status'];
+            }
+            
+            if (isset($validated['notes'])) {
+                $enrollmentData['notes'] = $validated['notes'];
+            }
+            
+            if (!empty($enrollmentData)) {
+                $enrollment->update($enrollmentData);
+            }
+            
+            if (isset($validated['payment_method']) || isset($validated['payment_amount'])) {
+                $payment = $enrollment->payments->first();
+                
+                $paymentData = [
+                    'method' => $validated['payment_method'] ?? $payment?->method,
+                    'amount' => $validated['payment_amount'] ?? $payment?->amount,
+                    'status' => $validated['payment_status'] ?? $payment?->status ?? PaymentStatus::PENDING,
+                    'reference_number' => $validated['reference_number'] ?? $payment?->reference_number,
+                ];
+                
+                if ($payment) {
+                    $payment->update($paymentData);
+                } else {
+                    $paymentData['payment_date'] = now();
+                    $paymentData['enrollment_id'] = $enrollment->id;
+                    Payment::create($paymentData);
+                }
+            }
+            
+            DB::commit();
+            
+            $enrollment->load(['student.guardian', 'course', 'payments']);
+            
+            return new EnrollmentResource($enrollment);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            throw $e;
+        }
     }
 
     public function destroy(Enrollment $enrollment): JsonResponse

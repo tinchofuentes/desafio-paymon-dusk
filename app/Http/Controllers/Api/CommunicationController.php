@@ -75,19 +75,12 @@ class CommunicationController extends Controller
         return CommunicationResource::collection($communications);
     }
     
-    public function store(Request $request): JsonResponse
+    public function store(CommunicationRequest $request): JsonResponse
     {
         try {
             DB::beginTransaction();
             
-            $validated = $request->validate([
-                'course_id' => 'required|integer|exists:courses,id',
-                'title' => 'required|string|max:255',
-                'message' => 'required|string',
-                'send_date' => 'required|date',
-                'status' => 'required|string|in:draft,sent,scheduled',
-                'send_now' => 'sometimes|boolean'
-            ]);
+            $validated = $request->validated();
             
             $communication = Communication::create($validated);
             
@@ -141,19 +134,13 @@ class CommunicationController extends Controller
         return new CommunicationResource($communication);
     }
     
-    public function update(Request $request, Communication $communication): CommunicationResource
+    public function update(CommunicationRequest $request, Communication $communication): CommunicationResource
     {
         if ($communication->status === 'sent') {
             abort(422, 'No se puede actualizar un comunicado que ya ha sido enviado');
         }
         
-        $validated = $request->validate([
-            'course_id' => 'sometimes|integer|exists:courses,id',
-            'title' => 'sometimes|string|max:255',
-            'message' => 'sometimes|string',
-            'send_date' => 'sometimes|date',
-            'status' => 'sometimes|string|in:draft,scheduled'
-        ]);
+        $validated = $request->validated();
         
         $communication->update($validated);
         
@@ -184,26 +171,36 @@ class CommunicationController extends Controller
     
     public function send(Communication $communication): JsonResponse
     {
-        if ($communication->status === 'sent') {
-            return response()->json([
-                'message' => 'El comunicado ya ha sido enviado'
-            ], 400);
-        }
-        
-        $result = $this->communicationService->sendCommunication($communication);
-        
-        if ($result['success']) {
-            $communication->status = 'sent';
-            $communication->save();
+        try {
+            if ($communication->status->value === 'sent') {
+                return response()->json([
+                    'message' => 'El comunicado ya ha sido enviado'
+                ], 400);
+            }
             
+            $result = $this->communicationService->sendCommunication($communication);
+            
+            if ($result['total'] > 0) {
+                $communication->status = 'sent';
+                $communication->save();
+                
+                return response()->json([
+                    'message' => 'Comunicado enviado con éxito',
+                    'total' => $result['total'],
+                    'sent' => $result['sent'],
+                    'errors' => $result['errors']
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'No se pudo enviar el comunicado',
+                    'total' => $result['total'],
+                    'sent' => $result['sent'],
+                    'errors' => $result['errors']
+                ], 500);
+            }
+        } catch (\Exception $e) {
             return response()->json([
-                'message' => $result['message'],
-                'sent' => $result['sent'],
-                'errors' => $result['errors']
-            ]);
-        } else {
-            return response()->json([
-                'message' => $result['message']
+                'message' => 'Error al enviar el comunicado: ' . $e->getMessage()
             ], 500);
         }
     }

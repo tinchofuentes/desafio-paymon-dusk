@@ -40,11 +40,13 @@ class EnrollmentRequest extends FormRequest
             
             // Enrollment data
             'course_id' => 'required|exists:courses,id',
-            'enrollment_status' => ['nullable', Rule::enum(EnrollmentStatus::class)],
+            'enrollment_date' => 'nullable|date',
+            'notes' => 'nullable|string',
+            'status' => ['nullable', Rule::enum(EnrollmentStatus::class)],
             
             // Payment data
             'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
-            'payment_amount' => 'required|numeric|min:0',
+            'payment_amount' => 'nullable|numeric|min:0',
             'payment_status' => ['nullable', Rule::enum(PaymentStatus::class)],
             'reference_number' => 'nullable|string|max:255',
         ];
@@ -72,9 +74,9 @@ class EnrollmentRequest extends FormRequest
             'course_id.exists' => 'El curso seleccionado no existe',
             
             'payment_method.required' => 'Debe seleccionar un método de pago',
-            'payment_amount.required' => 'El monto del pago es obligatorio',
             'payment_amount.numeric' => 'El monto debe ser un valor numérico',
             'payment_amount.min' => 'El monto no puede ser negativo',
+            'reference_number.required' => 'El número de referencia es obligatorio para transferencias bancarias',
         ];
     }
 }

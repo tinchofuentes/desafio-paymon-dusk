@@ -34,6 +34,7 @@ class CommunicationControllerDoc implements ApiDocumentation
      *     tags={"Communications"},
      *     summary="Obtener listado de comunicados",
      *     description="Retorna un listado paginado de comunicados",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="course_id",
      *         in="query",
@@ -170,6 +171,7 @@ class CommunicationControllerDoc implements ApiDocumentation
      *     tags={"Communications"},
      *     summary="Obtener detalle de un comunicado",
      *     description="Retorna los datos de un comunicado específico",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",

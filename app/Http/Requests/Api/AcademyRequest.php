@@ -21,13 +21,11 @@ class AcademyRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [
+        return [
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'active' => 'boolean',
         ];
-
-        return $rules;
     }
 
     /**

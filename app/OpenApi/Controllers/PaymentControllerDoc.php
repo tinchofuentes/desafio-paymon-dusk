@@ -18,32 +18,35 @@ class PaymentControllerDoc implements ApiDocumentation
     public static function getAnnotations(): array
     {
         return [
-            self::processEndpoint(),
+            self::storeEndpoint(),
         ];
     }
 
     /**
      * @OA\Post(
-     *     path="/payments/{payment}/process",
-     *     operationId="processPayment",
+     *     path="/payments",
+     *     operationId="storePayment",
      *     tags={"Payments"},
-     *     summary="Procesar un pago existente",
-     *     description="Procesa un pago según su método (efectivo o transferencia bancaria)",
+     *     summary="Registrar un nuevo pago",
+     *     description="Crea un nuevo registro de pago en el sistema",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
-     *         name="payment",
-     *         in="path",
-     *         description="ID del pago a procesar",
+     *     @OA\RequestBody(
      *         required=true,
-     *         @OA\Schema(type="integer")
+     *         @OA\JsonContent(
+     *             required={"enrollment_id", "amount", "method", "payment_date"},
+     *             @OA\Property(property="enrollment_id", type="integer", example=1),
+     *             @OA\Property(property="amount", type="number", format="float", example=150.00),
+     *             @OA\Property(property="method", type="string", enum={"cash", "bank_transfer"}, example="cash"),
+     *             @OA\Property(property="status", type="string", enum={"pending", "completed", "failed", "refunded"}, example="pending"),
+     *             @OA\Property(property="payment_date", type="string", format="date", example="2023-07-15"),
+     *             @OA\Property(property="reference_number", type="string", example="TRX-123456"),
+     *             @OA\Property(property="notes", type="string", example="Pago inicial de matrícula")
+     *         )
      *     ),
      *     @OA\Response(
-     *         response=200,
-     *         description="Pago procesado exitosamente",
+     *         response=201,
+     *         description="Pago registrado exitosamente",
      *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="message", type="string", example="Pago en efectivo procesado correctamente"),
-     *             @OA\Property(property="transaction_id", type="string", example="CASH-1625145600-123"),
      *             @OA\Property(
      *                 property="data",
      *                 ref="#/components/schemas/Payment"
@@ -52,22 +55,25 @@ class PaymentControllerDoc implements ApiDocumentation
      *     ),
      *     @OA\Response(
      *         response=422,
-     *         description="Error en el procesamiento del pago",
+     *         description="Error de validación",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="message", type="string", example="Número de referencia inválido")
+     *             @OA\Property(property="message", type="string", example="Los datos proporcionados no son válidos"),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(property="enrollment_id", type="array", @OA\Items(type="string", example="La matrícula es obligatoria")),
+     *                 @OA\Property(property="amount", type="array", @OA\Items(type="string", example="El monto del pago es obligatorio")),
+     *                 @OA\Property(property="method", type="array", @OA\Items(type="string", example="El método de pago es obligatorio"))
+     *             )
      *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Pago no encontrado"
      *     ),
      *     @OA\Response(
      *         response=500,
      *         description="Error del servidor",
      *         @OA\JsonContent(
      *             type="object",
-     *             @OA\Property(property="message", type="string", example="Error al procesar el pago: Mensaje de error")
+     *             @OA\Property(property="message", type="string", example="Error al registrar el pago: Mensaje de error")
      *         )
      *     ),
      *     @OA\Response(
@@ -76,7 +82,7 @@ class PaymentControllerDoc implements ApiDocumentation
      *     )
      * )
      */
-    public static function processEndpoint(): string
+    public static function storeEndpoint(): string
     {
         return "";
     }

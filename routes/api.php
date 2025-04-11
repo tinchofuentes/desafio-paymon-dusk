@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AcademyController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\CommunicationController;
@@ -20,6 +21,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('v1')->group(function () {
+    Route::post('auth/login', [AuthController::class, 'login'])->name('auth.login');
+    
+    // Public routes
     Route::apiResource('academies', AcademyController::class)->only(['index', 'show']);
     
     Route::apiResource('courses', CourseController::class)->only(['index', 'show']);
@@ -28,6 +32,9 @@ Route::prefix('v1')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::post('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
+    Route::get('auth/user', [AuthController::class, 'user'])->name('auth.user');
+    
     Route::apiResource('academies', AcademyController::class)->except(['index', 'show']);
     
     Route::apiResource('courses', CourseController::class)->except(['index', 'show']);
@@ -39,6 +46,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::post('communications/{communication}/send', [CommunicationController::class, 'send'])
         ->name('communications.send');
     
-    Route::post('payments/{payment}/process', [PaymentController::class, 'process'])
-        ->name('payments.process');
+    // Ruta para registrar pagos
+    Route::post('payments', [PaymentController::class, 'store'])
+        ->name('payments.store');
 });

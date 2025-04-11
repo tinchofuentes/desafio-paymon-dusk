@@ -95,12 +95,12 @@ class CourseControllerDoc implements ApiDocumentation
      *     operationId="storeCourse",
      *     tags={"Courses"},
      *     summary="Crear un nuevo curso",
-     *     description="Crea un nuevo curso en la base de datos",
+     *     description="Crea un nuevo curso en la base de datos. Para matricular estudiantes en este curso, utilice el endpoint de Enrollments (/enrollments).",
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name", "academy_id", "cost", "duration", "modality"},
+     *             required={"academy_id", "name", "description", "cost", "duration", "modality"},
      *             @OA\Property(property="name", type="string", example="Piano para principiantes"),
      *             @OA\Property(property="description", type="string", example="Curso básico de piano"),
      *             @OA\Property(property="academy_id", type="integer", example=1),
@@ -205,6 +205,8 @@ class CourseControllerDoc implements ApiDocumentation
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
+     *             required={"academy_id", "name", "description", "cost", "duration", "modality"},
+     *             @OA\Property(property="academy_id", type="integer", example=1),
      *             @OA\Property(property="name", type="string", example="Piano nivel avanzado"),
      *             @OA\Property(property="description", type="string", example="Curso avanzado de piano"),
      *             @OA\Property(property="cost", type="number", format="float", example=200.00),

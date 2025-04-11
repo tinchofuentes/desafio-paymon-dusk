@@ -25,7 +25,7 @@ class CourseController extends Controller
         }
         
         if ($request->has('active')) {
-            $query->where('active', (bool) $request->active);
+            $query->where('active', $request->boolean('active'));
         }
         
         if ($request->boolean('with_academy')) {

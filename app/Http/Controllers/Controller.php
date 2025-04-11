@@ -17,13 +17,6 @@ use Illuminate\Routing\Controller as BaseController;
  *     url="/api/v1",
  *     description="API Server"
  * )
- * 
- * @OA\SecurityScheme(
- *     securityScheme="bearerAuth",
- *     type="http",
- *     scheme="bearer",
- *     bearerFormat="JWT"
- * )
  */
 class Controller extends BaseController
 {

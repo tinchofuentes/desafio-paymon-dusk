@@ -36,13 +36,13 @@ namespace App\OpenApi\Schemas;
  *         @OA\Property(
  *             property="value",
  *             type="string",
- *             enum={"pending", "active", "completed", "cancelled"},
- *             example="active"
+ *             enum={"pending", "confirmed", "cancelled"},
+ *             example="confirmed"
  *         ),
  *         @OA\Property(
  *             property="label",
  *             type="string",
- *             example="Activa"
+ *             example="Confirmado"
  *         )
  *     ),
  *     @OA\Property(

@@ -310,10 +310,6 @@ class AcademyControllerDoc implements ApiDocumentation
      *         description="Academia no encontrada"
      *     ),
      *     @OA\Response(
-     *         response=422,
-     *         description="No se puede eliminar la academia porque tiene cursos asociados"
-     *     ),
-     *     @OA\Response(
      *         response=401,
      *         description="No autorizado"
      *     )

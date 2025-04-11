@@ -2,47 +2,57 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\PaymentProcessRequest;
+use App\Http\Requests\Api\PaymentRequest;
 use App\Http\Resources\PaymentResource;
 use App\Models\Payment;
-use App\Services\PaymentService;
 use App\OpenApi\Controllers\PaymentControllerDoc;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @see PaymentControllerDoc for API documentation
  */
 class PaymentController extends Controller
 {
-    protected $paymentService;
-    
-    public function __construct(PaymentService $paymentService)
-    {
-        $this->paymentService = $paymentService;
-    }
-    
-    public function process(PaymentProcessRequest $request, Payment $payment): JsonResponse
+    /**
+     * Registrar un nuevo pago
+     *
+     * @param PaymentRequest $request
+     * @return JsonResponse
+     */
+    public function store(PaymentRequest $request): JsonResponse
     {
         try {
-            $result = $this->paymentService->processPayment($payment);
+            DB::beginTransaction();
             
-            if ($result['success']) {
-                $payment->refresh();
+            $validated = $request->validated();
+            
+            $payment = Payment::create([
+                'enrollment_id' => $validated['enrollment_id'],
+                'amount' => $validated['amount'],
+                'method' => $validated['method'],
+                'status' => $validated['status'] ?? PaymentStatus::PENDING,
+                'payment_date' => $validated['payment_date'],
+                'reference_number' => $validated['reference_number'] ?? null,
+                'notes' => $validated['notes'] ?? null,
+            ]);
+            
+            DB::commit();
+            
+            // Cargar la relación enrollment
+            $payment->load('enrollment');
+            
+            return (new PaymentResource($payment))
+                ->response()
+                ->setStatusCode(201);
                 
-                return response()->json([
-                    'message' => $result['message'],
-                    'transaction_id' => $result['transaction_id'] ?? null,
-                    'data' => new PaymentResource($payment)
-                ]);
-            } else {
-                return response()->json([
-                    'message' => $result['message']
-                ], 422);
-            }
         } catch (\Exception $e) {
+            DB::rollBack();
+            
             return response()->json([
-                'message' => 'Error al procesar el pago: ' . $e->getMessage()
+                'message' => 'Error al registrar el pago: ' . $e->getMessage()
             ], 500);
         }
     }
