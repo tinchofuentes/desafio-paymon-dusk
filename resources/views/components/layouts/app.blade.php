@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ $title ?? config('app.name', 'School Management System') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -13,9 +13,10 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @fluxAppearance
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-gray-100 flex flex-col">
             <livewire:layout.navigation />
 
             <!-- Page Heading -->
@@ -28,9 +29,18 @@
             @endif
 
             <!-- Page Content -->
-            <main>
+            <main class="flex-grow">
                 {{ $slot }}
             </main>
+
+            <footer class="p-10 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 mt-auto">
+                <div class="max-w-7xl mx-auto">
+                    <div class="font-bold text-lg mb-2">School Management System</div>
+                    <p>© {{ date('Y') }} All rights reserved.</p>
+                </div>
+            </footer>
         </div>
+
+        @fluxScripts
     </body>
-</html>
+</html> 

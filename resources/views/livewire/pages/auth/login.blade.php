@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Session;
 use function Livewire\Volt\form;
 use function Livewire\Volt\layout;
 
-layout('layouts.guest');
+layout('components.layouts.guest');
 
 form(LoginForm::class);
 
