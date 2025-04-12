@@ -1,31 +1,24 @@
-# Sistema de Gestión Escolar
-
-## Acerca del Proyecto
-
-Una aplicación web construida con Laravel y Livewire para gestionar comunicaciones escolares y procesos de matrícula. Este sistema permite a las escuelas mostrar su oferta académica, gestionar inscripciones de estudiantes y mantener una comunicación efectiva con los padres.
+# Sistema de Gestión de Comunicados y Matrículas para Escuela
 
 ## Características
 
 - **Gestión de Oferta Académica**
   - Visualización de academias y cursos disponibles
   - Detalles de cursos incluyendo costo, duración y modalidad
-  - Catálogo de cursos interactivo
 
 - **Sistema de Matrícula**
-  - Formularios de inscripción interactivos usando Livewire
-  - Registro de estudiantes
-  - Selección de cursos
-  - Procesamiento de pagos (efectivo/transferencia bancaria)
+  - Formularios de inscripción interactivos usando Livewire con proceso por pasos
+  - Registro de estudiantes con información demográfica (género, fecha de nacimiento)
+  - Selección de cursos y seguimiento del estado de matrícula
 
 - **Sistema de Comunicación**
-  - Comunicaciones dirigidas a padres
-  - Filtrado por curso o edad del estudiante
-  - Seguimiento del historial de comunicaciones
+  - Comunicaciones dirigidas a padres/tutores
+  - Filtrado por curso específico o rango de edad del estudiante
+  - Programación de envíos y seguimiento del estado (borrador, enviado, programado)
+  - Envío de correos electrónicos a tutores con seguimiento de lectura
 
 - **Procesamiento de Pagos**
-  - Soporte para múltiples métodos de pago
-  - Seguimiento y gestión de pagos
-  - Historial de transacciones
+  - Soporte para múltiples métodos de pago (efectivo, transferencia bancaria)
 
 ## Stack Tecnológico
 
@@ -63,7 +56,7 @@ Laravel Sail es una interfaz de línea de comandos ligera para interactuar con e
 
 1. Clonar el repositorio
 ```bash
-git clone https://github.com/yourusername/school-management-system.git
+git clone https://github.com/YoimelDev/school-management-system
 cd school-management-system
 ```
 
@@ -278,7 +271,7 @@ php artisan optimize:clear
    - description (descripción)
    - cost (costo)
    - duration (duración)
-   - modality (modalidad)
+   - modality (modalidad: in-person, online, hybrid)
    - active (activo)
    - capacity (capacidad)
    - start_date (fecha de inicio)
@@ -292,6 +285,7 @@ php artisan optimize:clear
    - first_name (nombre)
    - last_name (apellido)
    - birth_date (fecha de nacimiento)
+   - gender (género: male, female, other)
    - created_at
    - updated_at
 
@@ -308,7 +302,9 @@ php artisan optimize:clear
    - id
    - student_id (id del estudiante)
    - course_id (id del curso)
-   - status (estado)
+   - enrollment_date (fecha de matrícula)
+   - status (estado: pending, confirmed, cancelled)
+   - notes (notas)
    - created_at
    - updated_at
 
@@ -316,18 +312,23 @@ php artisan optimize:clear
    - id
    - enrollment_id (id de matrícula)
    - amount (monto)
-   - payment_method (método de pago)
-   - status (estado)
+   - method (método de pago: cash, bank_transfer)
+   - status (estado: pending, completed, failed, refunded)
+   - payment_date (fecha de pago)
+   - reference_number (número de referencia)
+   - notes (notas)
    - created_at
    - updated_at
 
 7. **Comunicación (Communication)**
    - id
+   - course_id (id del curso, opcional)
    - title (título)
    - message (mensaje)
-   - target_type (tipo de destinatario)
-   - target_criteria (criterio de destinatario)
-   - sent_at (fecha de envío)
+   - age_from (edad desde)
+   - age_to (edad hasta)
+   - send_date (fecha de envío)
+   - status (estado: draft, sent, scheduled)
    - created_at
    - updated_at
 
