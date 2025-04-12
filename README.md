@@ -361,7 +361,6 @@ PUT /api/v1/enrollments/{id}
 ### Pagos
 ```
 POST /api/v1/payments
-GET /api/v1/payments/{id}
 ```
 
 ### Comunicaciones
