@@ -165,7 +165,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="grid grid-cols-2 gap-4 mb-4 text-gray-900">
                         <div>
                             <p class="text-sm text-gray-600">
                                 Curso:
@@ -209,7 +209,7 @@
                     </div>
 
                     @if ($communication && $communication->guardians && $communication->guardians->count() > 0)
-                        <div class="mt-4">
+                        <div class="mt-4 text-gray-900">
                             <h4 class="font-medium mb-2">
                                 Destinatarios ({{ $communication->guardians->count() }}):
                             </h4>
