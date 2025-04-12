@@ -1,66 +1,346 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Gestión Escolar
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Acerca del Proyecto
 
-## About Laravel
+Una aplicación web construida con Laravel y Livewire para gestionar comunicaciones escolares y procesos de matrícula. Este sistema permite a las escuelas mostrar su oferta académica, gestionar inscripciones de estudiantes y mantener una comunicación efectiva con los padres.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Características
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Gestión de Oferta Académica**
+  - Visualización de academias y cursos disponibles
+  - Detalles de cursos incluyendo costo, duración y modalidad
+  - Catálogo de cursos interactivo
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Sistema de Matrícula**
+  - Formularios de inscripción interactivos usando Livewire
+  - Registro de estudiantes
+  - Selección de cursos
+  - Procesamiento de pagos (efectivo/transferencia bancaria)
 
-## Learning Laravel
+- **Sistema de Comunicación**
+  - Comunicaciones dirigidas a padres
+  - Filtrado por curso o edad del estudiante
+  - Seguimiento del historial de comunicaciones
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Procesamiento de Pagos**
+  - Soporte para múltiples métodos de pago
+  - Seguimiento y gestión de pagos
+  - Historial de transacciones
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Stack Tecnológico
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Backend**
+  - Laravel 12.0
+  - PHP 8.2+
+  - MySQL
 
-## Laravel Sponsors
+- **Frontend**
+  - Livewire 3.4+
+  - TailwindCSS 3.1+
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Documentación API**
+  - L5-Swagger 9.0+
 
-### Premium Partners
+- **Desarrollo y Pruebas**
+  - Laravel Sail
+  - PHPUnit
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Requisitos del Sistema
 
-## Contributing
+- PHP >= 8.2
+- Composer
+- Node.js y NPM
+- MySQL
+- Docker (opcional, para usar Laravel Sail)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Instalación
 
-## Code of Conduct
+### Con Docker (recomendado)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. Clonar el repositorio
+```bash
+git clone https://github.com/yourusername/school-management-system.git
+cd school-management-system
+```
 
-## Security Vulnerabilities
+2. Configurar variables de entorno
+```bash
+cp .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. Iniciar contenedores Docker
+```bash
+docker-compose up -d
+```
 
-## License
+4. Instalar dependencias PHP
+```bash
+docker-compose exec app composer install
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. Generar clave de aplicación
+```bash
+docker-compose exec app php artisan key:generate
+```
+
+6. Ejecutar migraciones y seeders
+```bash
+docker-compose exec app php artisan migrate --seed
+```
+
+7. Instalar dependencias frontend y compilar assets
+```bash
+docker-compose exec app npm install
+docker-compose exec app npm run build
+```
+
+8. Acceder a la aplicación en http://localhost
+
+### Con Laravel Sail
+
+1. Clonar el repositorio
+```bash
+git clone https://github.com/yourusername/school-management-system.git
+cd school-management-system
+```
+
+2. Configurar variables de entorno
+```bash
+cp .env.example .env
+```
+
+3. Instalar dependencias PHP (solo la primera vez)
+```bash
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php82-composer:latest \
+    composer install --ignore-platform-reqs
+```
+
+4. Iniciar contenedores con Sail
+```bash
+./vendor/bin/sail up -d
+```
+
+5. Generar clave de aplicación
+```bash
+./vendor/bin/sail artisan key:generate
+```
+
+6. Ejecutar migraciones y seeders
+```bash
+./vendor/bin/sail artisan migrate --seed
+```
+
+7. Instalar dependencias frontend y compilar assets
+```bash
+./vendor/bin/sail npm install
+./vendor/bin/sail npm run build
+```
+
+8. Acceder a la aplicación en http://localhost
+
+### Sin Docker (Entorno Local)
+
+1. Clonar el repositorio
+```bash
+git clone https://github.com/yourusername/school-management-system.git
+cd school-management-system
+```
+
+2. Instalar dependencias PHP
+```bash
+composer install
+```
+
+3. Configurar variables de entorno
+```bash
+cp .env.example .env
+```
+
+4. Configurar la conexión a la base de datos en el archivo .env
+
+5. Generar clave de aplicación
+```bash
+php artisan key:generate
+```
+
+6. Ejecutar migraciones y seeders
+```bash
+php artisan migrate --seed
+```
+
+7. Instalar dependencias frontend y compilar assets
+```bash
+npm install
+npm run build
+```
+
+8. Iniciar servidor de desarrollo
+```bash
+php artisan serve
+```
+
+9. Acceder a la aplicación en http://localhost:8000
+
+## Comandos Útiles
+
+### Con Docker/Sail
+```bash
+# Ejecutar tests
+./vendor/bin/sail artisan test
+
+# Iniciar servidor de desarrollo frontend
+./vendor/bin/sail npm run dev
+
+# Generar documentación API
+./vendor/bin/sail artisan l5-swagger:generate
+
+# Limpiar caché
+./vendor/bin/sail artisan optimize:clear
+```
+
+### Sin Docker
+```bash
+# Ejecutar tests
+php artisan test
+
+# Iniciar servidor de desarrollo frontend
+npm run dev
+
+# Generar documentación API
+php artisan l5-swagger:generate
+
+# Limpiar caché
+php artisan optimize:clear
+```
+
+## Estructura de la Base de Datos
+
+### Modelos Principales
+
+1. **Academia (Academy)**
+   - id
+   - name (nombre)
+   - description (descripción)
+   - logo (logo) 
+   - active (activo)
+   - created_at
+   - updated_at
+
+2. **Curso (Course)**
+   - id
+   - academy_id (id de academia)
+   - name (nombre)
+   - description (descripción)
+   - cost (costo)
+   - duration (duración)
+   - modality (modalidad)
+   - active (activo)
+   - capacity (capacidad)
+   - start_date (fecha de inicio)
+   - end_date (fecha de fin)
+   - created_at
+   - updated_at
+
+3. **Estudiante (Student)**
+   - id
+   - guardian_id (id del tutor)
+   - first_name (nombre)
+   - last_name (apellido)
+   - birth_date (fecha de nacimiento)
+   - created_at
+   - updated_at
+
+4. **Tutor (Guardian)**
+   - id
+   - user_id (id del usuario)
+   - name (nombre)
+   - email (correo electrónico)
+   - phone (teléfono)
+   - created_at
+   - updated_at
+
+5. **Matrícula (Enrollment)**
+   - id
+   - student_id (id del estudiante)
+   - course_id (id del curso)
+   - status (estado)
+   - created_at
+   - updated_at
+
+6. **Pago (Payment)**
+   - id
+   - enrollment_id (id de matrícula)
+   - amount (monto)
+   - payment_method (método de pago)
+   - status (estado)
+   - created_at
+   - updated_at
+
+7. **Comunicación (Communication)**
+   - id
+   - title (título)
+   - message (mensaje)
+   - target_type (tipo de destinatario)
+   - target_criteria (criterio de destinatario)
+   - sent_at (fecha de envío)
+   - created_at
+   - updated_at
+
+## Documentación API
+
+El proyecto incluye documentación completa de la API usando Swagger/OpenAPI. Puede acceder a la documentación en:
+
+- **Interfaz Swagger UI**: `/api/documentation`
+- **Formato JSON**: `/docs?api-docs.json`
+
+La documentación proporciona información detallada sobre todos los endpoints disponibles, parámetros de solicitud, formatos de respuesta y requisitos de autenticación.
+
+## Endpoints API
+
+### Academias y Cursos
+```
+GET /api/v1/academies
+GET /api/v1/academies/{id}
+GET /api/v1/courses
+GET /api/v1/courses/{id}
+```
+
+### Matrículas
+```
+POST /api/v1/enrollments
+GET /api/v1/enrollments/{id}
+PUT /api/v1/enrollments/{id}
+```
+
+### Pagos
+```
+POST /api/v1/payments
+GET /api/v1/payments/{id}
+```
+
+### Comunicaciones
+```
+POST /api/v1/communications
+GET /api/v1/communications
+GET /api/v1/communications/{id}
+POST /api/v1/communications/{communication}/send
+```
+
+## Seguridad
+
+- Autenticación API usando Laravel Sanctum 4.0+
+- Protección CSRF para rutas web
+- Validación de formularios
+- Protección XSS
+- Prevención de inyección SQL mediante Eloquent ORM
+
+## Pruebas
+
+Ejecutar el conjunto de pruebas:
+```bash
+./vendor/bin/sail artisan test
+```
