@@ -60,6 +60,23 @@ $logout = function (Logout $logout) {
                         Cerrar sesión
                     </flux:button>
                 </div>
+
+            @else
+                <div class="flex items-center gap-2">
+                    <flux:button
+                        wire:navigate
+                        href="{{ url('/login') }}"
+                    >
+                        Iniciar sesión
+                    </flux:button>
+
+                    <flux:button
+                        wire:navigate
+                        href="{{ url('/register') }}"
+                    >
+                        Registrarse
+                    </flux:button>
+                </div>
             @endauth
 
             <!-- Mobile menu button -->
