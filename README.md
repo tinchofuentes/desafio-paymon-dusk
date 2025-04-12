@@ -67,19 +67,24 @@ git clone https://github.com/yourusername/school-management-system.git
 cd school-management-system
 ```
 
-2. Instalar Laravel Sail
+2. Instalar dependencias de Composer con Docker
 ```bash
-composer require laravel/sail --dev
+docker run --rm \
+-u "$(id -u):$(id -g)" \
+-v "$(pwd):/var/www/html" \
+-w /var/www/html \
+laravelsail/php84-composer:latest \
+composer install --ignore-platform-reqs
 ```
 
-3. Publicar los archivos de configuración de Sail
-```bash
-php artisan sail:install
-```
-
-4. Configurar variables de entorno
+3. Configurar variables de entorno
 ```bash
 cp .env.example .env
+```
+
+4. Ejecutar la instalación de Sail
+```bash
+php artisan sail:install
 ```
 
 5. Iniciar los contenedores de Sail
@@ -115,7 +120,7 @@ Para iniciar en modo desacoplado (background):
 Para evitar escribir `./vendor/bin/sail` cada vez, puedes configurar un alias en tu shell:
 
 ```bash
-alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
+alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'
 ```
 
 Agrega esto a tu archivo de configuración de shell (~/.bashrc, ~/.zshrc, etc.) y reinicia la terminal.
@@ -235,9 +240,7 @@ sail artisan l5-swagger:generate
 sail artisan optimize:clear
 
 # Reconstruir imágenes (actualización)
-docker compose down -v
 sail build --no-cache
-sail up
 ```
 
 ### Sin Docker
