@@ -55,7 +55,11 @@ Una aplicación web construida con Laravel y Livewire para gestionar comunicacio
 
 ## Instalación
 
-### Con Docker (recomendado)
+### Con Laravel Sail (recomendado)
+
+Laravel Sail es una interfaz de línea de comandos ligera para interactuar con el entorno de desarrollo Docker predeterminado de Laravel.
+
+#### Instalación en proyectos existentes
 
 1. Clonar el repositorio
 ```bash
@@ -63,81 +67,104 @@ git clone https://github.com/yourusername/school-management-system.git
 cd school-management-system
 ```
 
-2. Configurar variables de entorno
+2. Instalar Laravel Sail
+```bash
+composer require laravel/sail --dev
+```
+
+3. Publicar los archivos de configuración de Sail
+```bash
+php artisan sail:install
+```
+
+4. Configurar variables de entorno
 ```bash
 cp .env.example .env
 ```
 
-3. Iniciar contenedores Docker
+5. Iniciar los contenedores de Sail
 ```bash
-docker-compose up -d
+./vendor/bin/sail up
 ```
 
-4. Instalar dependencias PHP
-```bash
-docker-compose exec app composer install
-```
-
-5. Generar clave de aplicación
-```bash
-docker-compose exec app php artisan key:generate
-```
-
-6. Ejecutar migraciones y seeders
-```bash
-docker-compose exec app php artisan migrate --seed
-```
-
-7. Instalar dependencias frontend y compilar assets
-```bash
-docker-compose exec app npm install
-docker-compose exec app npm run build
-```
-
-8. Acceder a la aplicación en http://localhost
-
-### Con Laravel Sail
-
-1. Clonar el repositorio
-```bash
-git clone https://github.com/yourusername/school-management-system.git
-cd school-management-system
-```
-
-2. Configurar variables de entorno
-```bash
-cp .env.example .env
-```
-
-3. Instalar dependencias PHP (solo la primera vez)
-```bash
-docker run --rm \
-    -u "$(id -u):$(id -g)" \
-    -v "$(pwd):/var/www/html" \
-    -w /var/www/html \
-    laravelsail/php82-composer:latest \
-    composer install --ignore-platform-reqs
-```
-
-4. Iniciar contenedores con Sail
+Para iniciar en modo desacoplado (background):
 ```bash
 ./vendor/bin/sail up -d
 ```
 
-5. Generar clave de aplicación
+6. Generar clave de aplicación
 ```bash
 ./vendor/bin/sail artisan key:generate
 ```
 
-6. Ejecutar migraciones y seeders
+7. Ejecutar migraciones y seeders
 ```bash
 ./vendor/bin/sail artisan migrate --seed
 ```
 
-7. Instalar dependencias frontend y compilar assets
+8. Instalar dependencias frontend y compilar assets
 ```bash
 ./vendor/bin/sail npm install
 ./vendor/bin/sail npm run build
+```
+
+9. Acceder a la aplicación en http://localhost
+
+#### Configurando un alias para Sail
+
+Para evitar escribir `./vendor/bin/sail` cada vez, puedes configurar un alias en tu shell:
+
+```bash
+alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
+```
+
+Agrega esto a tu archivo de configuración de shell (~/.bashrc, ~/.zshrc, etc.) y reinicia la terminal.
+
+Una vez configurado, puedes usar simplemente:
+
+```bash
+sail up -d
+sail artisan migrate
+sail npm run build
+```
+
+### Con Docker Compose
+
+1. Clonar el repositorio
+```bash
+git clone https://github.com/yourusername/school-management-system.git
+cd school-management-system
+```
+
+2. Configurar variables de entorno
+```bash
+cp .env.example .env
+```
+
+3. Levantar los contenedores Docker
+```bash
+docker compose up -d
+```
+
+4. Instalar dependencias PHP
+```bash
+docker compose exec app composer install
+```
+
+5. Generar clave de aplicación
+```bash
+docker compose exec app php artisan key:generate
+```
+
+6. Ejecutar migraciones y seeders
+```bash
+docker compose exec app php artisan migrate --seed
+```
+
+7. Instalar dependencias frontend y compilar assets
+```bash
+docker compose exec app npm install
+docker compose exec app npm run build
 ```
 
 8. Acceder a la aplicación en http://localhost
@@ -187,19 +214,30 @@ php artisan serve
 
 ## Comandos Útiles
 
-### Con Docker/Sail
+### Con Laravel Sail
 ```bash
+# Iniciar contenedores
+sail up -d
+
+# Detener contenedores
+sail stop
+
 # Ejecutar tests
-./vendor/bin/sail artisan test
+sail artisan test
 
 # Iniciar servidor de desarrollo frontend
-./vendor/bin/sail npm run dev
+sail npm run dev
 
 # Generar documentación API
-./vendor/bin/sail artisan l5-swagger:generate
+sail artisan l5-swagger:generate
 
 # Limpiar caché
-./vendor/bin/sail artisan optimize:clear
+sail artisan optimize:clear
+
+# Reconstruir imágenes (actualización)
+docker compose down -v
+sail build --no-cache
+sail up
 ```
 
 ### Sin Docker
