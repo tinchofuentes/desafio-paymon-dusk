@@ -56,8 +56,8 @@ Laravel Sail es una interfaz de línea de comandos ligera para interactuar con e
 
 1. Clonar el repositorio
 ```bash
-git clone https://github.com/YoimelDev/school-management-system
-cd school-management-system
+git clone https://github.com/tinchofuentes/desafio-paymon-dusk
+cd desafio-paymon-dusk
 ```
 
 2. Instalar dependencias de Composer con Docker
@@ -74,6 +74,11 @@ composer install --ignore-platform-reqs
 ```bash
 cp .env.example .env
 ```
+4. Agregar la siguiente línea al archivo .env
+```env
+APP_PORT=8000
+```
+También se incluye el archivo .env.dusk.local para configuración específica de los tests con Dusk. Copiar la APP_KEY generada al final en ambos archivos .env y .env.dusk.local.
 
 4. Ejecutar la instalación de Sail
 ```bash
@@ -82,11 +87,6 @@ php artisan sail:install
 
 5. Iniciar los contenedores de Sail
 ```bash
-./vendor/bin/sail up
-```
-
-Para iniciar en modo desacoplado (background):
-```bash
 ./vendor/bin/sail up -d
 ```
 
@@ -94,10 +94,11 @@ Para iniciar en modo desacoplado (background):
 ```bash
 ./vendor/bin/sail artisan key:generate
 ```
+Asegúrate de copiar esta misma clave al archivo .env.dusk.local.
 
 7. Ejecutar migraciones y seeders
 ```bash
-./vendor/bin/sail artisan migrate --seed
+./vendor/bin/sail artisan migrate:fresh --seed
 ```
 
 8. Instalar dependencias frontend y compilar assets
@@ -106,7 +107,12 @@ Para iniciar en modo desacoplado (background):
 ./vendor/bin/sail npm run build
 ```
 
-9. Acceder a la aplicación en http://localhost
+9. Acceder a la aplicación en http://localhost:8000
+
+10. Instalar Laravel Dusk
+```bash
+./vendor/bin/sail composer require --dev laravel/dusk
+```
 
 #### Configurando un alias para Sail
 
@@ -384,4 +390,9 @@ POST /api/v1/communications/{communication}/send
 Ejecutar el conjunto de pruebas:
 ```bash
 ./vendor/bin/sail artisan test
+```
+
+Ejecutar pruebas automatizadas con Dusk
+```bash
+./vendor/bin/sail dusk
 ```
