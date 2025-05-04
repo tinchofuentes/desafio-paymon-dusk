@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             CourseSeeder::class,
             GuardianSeeder::class,
             StudentSeeder::class,
+            CommunicationSeeder::class,
         ]);
     }
 }

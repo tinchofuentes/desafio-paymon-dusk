@@ -78,25 +78,6 @@ class EnrollCoursePage extends Page
     {
         $browser->press('Completar inscripción');
     }
-
-    // public function completeEnrollmentForm(Browser $browser)
-    // {
-    //     // Fill in the Guardian's data
-    //     $this->fillGuardianData($browser, 'Juan Pérez', 'juan@email.com', '1234567890');
-    //     // Go to the next form
-    //     $this->goToNextStep($browser);
-    //     // Fill in the student's data
-    //     $this->fillStudentData($browser, 'Juan Cruz', 'Pérez González', '01-05-2010', 'male');
-    //     // Go to the next form
-    //     $this->goToNextStep($browser);
-    //     // Verify that the Registration Summary and Payment Information sections are displayed.
-    //     $this->assertRegistrationSummary($browser);
-    //     $this->assertPaymentInformation($browser);
-    //     // Fill in the payment information
-    //     $this->fillPaymentInfo($browser, 'bank_transfer', '3A5E6F');
-    //     // Complete enrollment
-    //     $this->submitEnrollment($browser);
-    // }
     
     public function completeEnrollmentForm(Browser $browser)
     {
